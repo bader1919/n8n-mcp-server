@@ -38,3 +38,107 @@ const handleApiRequest = async (req, res, apiMethod, apiPath, dataTransformer = 
     });
   }
 };
+
+// Define MCP endpoints
+
+// Workflows endpoints
+app.post('/mcp/listWorkflows', async (req, res) => {
+  try {
+    const response = await api.get('/workflows');
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error listing workflows:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/getWorkflow', async (req, res) => {
+  try {
+    const { workflowId } = req.body;
+    if (!workflowId) {
+      return res.status(400).json({ error: 'workflowId is required' });
+    }
+    
+    const response = await api.get(`/workflows/${workflowId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error getting workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/createWorkflow', async (req, res) => {
+  return handleApiRequest(req, res, api.post, '/workflows');
+});
+
+app.post('/mcp/updateWorkflow', async (req, res) => {
+  try {
+    const { workflowId, workflowData } = req.body;
+    if (!workflowId || !workflowData) {
+      return res.status(400).json({ error: 'workflowId and workflowData are required' });
+    }
+    
+    const response = await api.put(`/workflows/${workflowId}`, workflowData);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error updating workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/deleteWorkflow', async (req, res) => {
+  try {
+    const { workflowId } = req.body;
+    if (!workflowId) {
+      return res.status(400).json({ error: 'workflowId is required' });
+    }
+    
+    const response = await api.delete(`/workflows/${workflowId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error deleting workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/activateWorkflow', async (req, res) => {
+  try {
+    const { workflowId } = req.body;
+    if (!workflowId) {
+      return res.status(400).json({ error: 'workflowId is required' });
+    }
+    
+    const response = await api.post(`/workflows/${workflowId}/activate`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error activating workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/deactivateWorkflow', async (req, res) => {
+  try {
+    const { workflowId } = req.body;
+    if (!workflowId) {
+      return res.status(400).json({ error: 'workflowId is required' });
+    }
+    
+    const response = await api.post(`/workflows/${workflowId}/deactivate`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error deactivating workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
