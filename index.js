@@ -220,3 +220,110 @@ app.post('/mcp/executeWorkflow', async (req, res) => {
     });
   }
 });
+
+// Credentials endpoints
+app.post('/mcp/listCredentials', async (req, res) => {
+  try {
+    const response = await api.get('/credentials');
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error listing credentials:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/getCredential', async (req, res) => {
+  try {
+    const { credentialId } = req.body;
+    if (!credentialId) {
+      return res.status(400).json({ error: 'credentialId is required' });
+    }
+    
+    const response = await api.get(`/credentials/${credentialId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error getting credential:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/createCredential', async (req, res) => {
+  return handleApiRequest(req, res, api.post, '/credentials');
+});
+
+app.post('/mcp/updateCredential', async (req, res) => {
+  try {
+    const { credentialId, credentialData } = req.body;
+    if (!credentialId || !credentialData) {
+      return res.status(400).json({ error: 'credentialId and credentialData are required' });
+    }
+    
+    const response = await api.patch(`/credentials/${credentialId}`, credentialData);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error updating credential:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/deleteCredential', async (req, res) => {
+  try {
+    const { credentialId } = req.body;
+    if (!credentialId) {
+      return res.status(400).json({ error: 'credentialId is required' });
+    }
+    
+    const response = await api.delete(`/credentials/${credentialId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error deleting credential:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// Tags endpoints
+app.post('/mcp/listTags', async (req, res) => {
+  try {
+    const response = await api.get('/tags');
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error listing tags:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/createTag', async (req, res) => {
+  return handleApiRequest(req, res, api.post, '/tags');
+});
+
+app.post('/mcp/deleteTag', async (req, res) => {
+  try {
+    const { tagId } = req.body;
+    if (!tagId) {
+      return res.status(400).json({ error: 'tagId is required' });
+    }
+    
+    const response = await api.delete(`/tags/${tagId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error deleting tag:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`N8N MCP Server is running on port ${PORT}`);
+});
