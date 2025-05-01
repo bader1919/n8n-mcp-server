@@ -142,3 +142,81 @@ app.post('/mcp/deactivateWorkflow', async (req, res) => {
     });
   }
 });
+
+// Executions endpoints
+app.post('/mcp/listExecutions', async (req, res) => {
+  try {
+    const { workflowId, limit, lastId } = req.body;
+    let url = '/executions';
+    
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (workflowId) params.append('workflowId', workflowId);
+    if (limit) params.append('limit', limit);
+    if (lastId) params.append('lastId', lastId);
+    
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+    
+    const response = await api.get(url);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error listing executions:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/getExecution', async (req, res) => {
+  try {
+    const { executionId } = req.body;
+    if (!executionId) {
+      return res.status(400).json({ error: 'executionId is required' });
+    }
+    
+    const response = await api.get(`/executions/${executionId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error getting execution:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/deleteExecution', async (req, res) => {
+  try {
+    const { executionId } = req.body;
+    if (!executionId) {
+      return res.status(400).json({ error: 'executionId is required' });
+    }
+    
+    const response = await api.delete(`/executions/${executionId}`);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error deleting execution:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
+
+app.post('/mcp/executeWorkflow', async (req, res) => {
+  try {
+    const { workflowId, data } = req.body;
+    if (!workflowId) {
+      return res.status(400).json({ error: 'workflowId is required' });
+    }
+    
+    const payload = data || {};
+    const response = await api.post(`/workflows/${workflowId}/execute`, payload);
+    return res.json(response.data);
+  } catch (error) {
+    console.error('Error executing workflow:', error.response?.data || error.message);
+    return res.status(error.response?.status || 500).json({
+      error: error.response?.data || error.message
+    });
+  }
+});
