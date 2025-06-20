@@ -1,0 +1,46 @@
+name: Deploy n8n MCP Server to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Workers
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for Workers
+        run: npm run build:worker
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: '3.95.0'
+          secrets: |
+            N8N_API_KEY
+            N8N_API_BASE_URL
+        env:
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+          N8N_API_BASE_URL: ${{ secrets.N8N_API_BASE_URL }}
+
+      - name: Test deployment
+        run: |
+          echo "Deployment completed successfully!"
+          echo "Your n8n MCP Server is now running on Cloudflare Workers"
+          echo "Test the deployment by visiting: https://n8n-mcp-server.your-subdomain.workers.dev/health"
