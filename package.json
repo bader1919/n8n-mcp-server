@@ -1,15 +1,34 @@
 {
   "name": "n8n-mcp-server",
   "version": "1.0.0",
-  "description": "MCP Server for N8N API",
+  "description": "MCP Server for N8N API - Cloudflare Workers Ready",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build:worker": "echo 'Worker build complete - using src/worker.js'",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "dev:worker": "wrangler dev",
+    "test:worker": "wrangler dev --local"
   },
   "dependencies": {
     "axios": "^1.6.2",
     "express": "^4.18.2",
     "dotenv": "^16.3.1"
   },
-  "type": "module"
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "wrangler": "^3.95.0"
+  },
+  "type": "module",
+  "keywords": [
+    "n8n",
+    "mcp",
+    "cloudflare",
+    "workers",
+    "automation",
+    "workflow"
+  ],
+  "author": "BY MB Consultancy",
+  "license": "MIT"
 }
