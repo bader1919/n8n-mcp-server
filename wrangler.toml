@@ -1,0 +1,19 @@
+name = "n8n-mcp-server"
+main = "src/worker.js"
+compatibility_date = "2024-06-20"
+
+[env.production]
+name = "n8n-mcp-server-prod"
+
+[vars]
+# Environment variables will be set via secrets for security
+# N8N_API_BASE_URL will be configured in Cloudflare dashboard
+# N8N_API_KEY will be configured in Cloudflare dashboard
+
+[build]
+command = "npm run build:worker"
+
+# Optional: Custom domain configuration
+# [env.production.routes]
+# pattern = "mcp.yourdomain.com/*"
+# zone_name = "yourdomain.com"
